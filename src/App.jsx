@@ -2,34 +2,73 @@ import React, {useState} from 'react';
 import 'animate.css';
 import './App.css';
 
+const background = document.getElementById("main")
+let currentDate = new Date();
+let hours = currentDate.getHours() ;
+let minutes = currentDate.getMinutes()
+let secs = currentDate.getSeconds()
+let today = currentDate.getDate();
+let month = currentDate.getMonth() + 1;
+let year = currentDate.getFullYear();
+let dayOfWeek = currentDate.toLocaleString("default", { weekday: "long" })
+
+
 // function to change hours to 12 hour format
 function formatHoursTo12(x) {
   return x % 12 || 12;
 }
 
 // function that determines whether to display am or pm
-function amOrPm() {
-  let currentDate = new Date();
-  let hours = currentDate.getHours() ;
+//Refactored previous function into 2 separte functions
+function pmTime() {
   if(hours >= 12) {
     return "p.m."
-  }else{
-    return "a.m"
+  }
+}
+
+function amTime() {
+  if(hours <= 11) {
+    return "p.m."
   }
 }
 
 // function that changes the background based on the time of day. Set to night at 8pm.
-function backgroundChange() {
-  const background = document.getElementById("main")
-  let currentDate = new Date();
-  let hours = currentDate.getHours() 
-  if(hours >= 20 ) {
-    background.className="night"
-  }else{
-    background.className="day"
+//refactored into 2 separate functions
+function dayTimeBackground() {
+  if(hours <= 19 ) {
+     background.className="day"
   }
 }
-backgroundChange();
+
+function nightTimeBackground() {
+  if(hours >= 20 ) {
+     background.className="night"
+  }
+}
+dayTimeBackground()
+nightTimeBackground();
+
+function todaysDate () {
+  return(
+    'Today is ' + dayOfWeek + ", " + month + "/" + today + "/" + year + "\n\n\n")
+}
+
+function dayTime (){
+  if(hours <= 11)
+  return (
+    "It is " + formatHoursTo12(hours) + ":" + minutes + ":" + secs + " " +  amTime()
+  )
+}
+
+function nightTime (){
+  if(hours >= 12)
+  return (
+    "It is " + formatHoursTo12(hours) + ":" + minutes + ":" + secs + " " +  pmTime()
+  )
+}
+
+dayTime ()
+nightTime ()
 
 function App() {
   const [zipcode, setZip] = useState("");
@@ -55,28 +94,6 @@ function App() {
   .catch(err => console.error(err));
 }}
 
-// Used to get todays date and dsiplay in specific format
-const todaysDate = () => {
-  let currentDate = new Date();
-  let tday = currentDate.getDate();
-  let month = currentDate.getMonth() + 1;
-  let year = currentDate.getFullYear();
-  let dayOfWeek = currentDate.toLocaleString("default", { weekday: "long" })
-  return (
-    'Today is ' + dayOfWeek + ", " + month + "/" + tday + "/" + year + "\n\n\n"
-  )
-}
-
-// Used to get todays time and dsiplay in specific format
-const time = () => {
-  let currentDate = new Date();
-  let hours = currentDate.getHours() ;
-  let minutes = currentDate.getMinutes()
-  let secs = currentDate.getSeconds()
-  return (
-    "It is " + formatHoursTo12(hours) + ":" + minutes + ":" + secs + " " +  amOrPm()
-  )
-}
 
 //Returns the icon image associated with the description property from console.log
 const getIcon = () => {
@@ -185,7 +202,7 @@ const currentConditons = () => {
 
     <div className='data transparent-bg animate__animated animate__lightSpeedInLeft animate__delay-2s'>
       <h2 className='dateTime'> {todaysDate()}<br></br></h2> 
-      <h3 className='time'>{time()}</h3>
+      <h3 className='time'>{dayTime()} {nightTime()}</h3>
       <img src={getIcon()} alt=""/>
       <div className='city'>{cityName()} </div>
       <div className='weather'>
